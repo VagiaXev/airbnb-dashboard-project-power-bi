@@ -1,0 +1,42 @@
+table DimReviewer
+	lineageTag: 674c78ad-c91a-425f-abe4-05edbe026abf
+
+	/// The reviewer’s id
+	column 'Reviewer ID'
+		dataType: int64
+		isKey
+		isNullable: false
+		formatString: 0
+		lineageTag: 55346305-cc92-4ce0-92c7-cbadde7e6ff0
+		summarizeBy: none
+		sourceColumn: Reviewer ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The reviewer’s name
+	column 'Reviewer Name'
+		dataType: string
+		lineageTag: 547c823a-bb05-4d69-a473-e11d3da544c3
+		summarizeBy: none
+		sourceColumn: Reviewer Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimReviewer = m
+		mode: import
+		source =
+				let
+				    Quelle = Sql.Database("DESKTOP-Q1CNOQD\SQLEXPRESS", "Greek_Airbnb"),
+				    dbo_DimReviewer = Quelle{[Schema="dbo",Item="DimReviewer"]}[Data],
+				    #"Umbenannte Spalten" = Table.RenameColumns(dbo_DimReviewer,{{"reviewer_id", "Reviewer ID"}, {"reviewer_name", "Reviewer Name"}})
+				in
+				    #"Umbenannte Spalten"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

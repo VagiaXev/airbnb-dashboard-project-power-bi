@@ -1,0 +1,104 @@
+table 'Reviews Calendar Table'
+	lineageTag: d9820cd8-77ad-4d1e-b402-7e33e3132872
+
+	column Date
+		dataType: dateTime
+		isKey
+		isNullable: false
+		formatString: Long Date
+		lineageTag: 41450e27-dbf9-48a4-885a-35800dd49afa
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: a9d88b50-8322-4b7f-8c4d-42bbbb728c62
+			defaultHierarchy: LocalDateTable_eae35b26-becf-48e4-8407-0eca567b34f4.Datumshierarchie
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a91ced0-94d8-4e7a-a2cf-1c50ac240cd6
+		summarizeBy: sum
+		sourceColumn: Year
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: a3935620-66ef-434f-88a8-a00b6d00ee60
+		summarizeBy: sum
+		sourceColumn: Month
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: f7c7478c-552b-4b0e-ac0e-02487bb26501
+		summarizeBy: sum
+		sourceColumn: Day
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 4ab1291a-495e-4ce8-b903-0bcb49b8c0f4
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: Month
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterNo
+		dataType: int64
+		formatString: 0
+		lineageTag: 9701fe43-e6e6-4c2d-b243-b60119085406
+		summarizeBy: sum
+		sourceColumn: QuarterNo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Reviews Calendar Table' = m
+		mode: import
+		source =
+				let
+					// Set the start and end date for the date table
+					StartDate = #date(2007, 01, 01),
+					EndDate = #date(2025, 12, 31),
+				 // Create a list of dates from the start to end date
+					DateList = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1,0,0,0)),
+					// Convert the list to a table and add columns for year, month, day, etc.
+					DateTable = Table.FromList(DateList, Splitter.SplitByNothing(), {"Date"}),
+					#"Changed Type" = Table.TransformColumnTypes(DateTable,{{"Date", type date}}),
+					#"Inserted Year" = Table.AddColumn(#"Changed Type", "Year", each Date.Year([Date]), Int32.Type),
+					#"Inserted Month" = Table.AddColumn(#"Inserted Year", "Month", each Date.Month([Date]), Int32.Type),
+					#"Inserted Day" = Table.AddColumn(#"Inserted Month", "Day", each Date.Day([Date]), Int32.Type),
+					#"Inserted MonthName" = Table.AddColumn(#"Inserted Day", "MonthName", each Date.ToText([Date], "MMMM"), type text),
+					#"Inserted QuarterNo" = Table.AddColumn(#"Inserted MonthName", "QuarterNo", each Date.QuarterOfYear([Date]), Int32.Type)
+				in
+				    #"Inserted QuarterNo"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

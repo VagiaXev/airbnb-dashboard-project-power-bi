@@ -1,0 +1,115 @@
+table 'Booking Calendar Table'
+	lineageTag: d4584db5-0da3-4c10-92bb-f08a414460dc
+
+	measure 'Date Clean' = DATEVALUE(FactBookings[Bo))
+		isHidden
+		lineageTag: f20a2a58-bf84-4fe8-9cfb-43cb87068b31
+
+		changedProperty = IsHidden
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: dee1a209-5dcf-4193-aadf-1e0b75c75180
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: fc500a10-ec37-4331-a92d-e239f7832d4d
+			defaultHierarchy: LocalDateTable_71e98930-6c94-4285-ae27-2c8f2120ce60.Datumshierarchie
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 6366f4d6-c6bc-4916-8cfd-64c9c56de1b6
+		summarizeBy: sum
+		sourceColumn: Year
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: b0c5b4c7-b062-4536-ab5a-fccdefa93dd4
+		summarizeBy: sum
+		sourceColumn: Month
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: 992951cd-421a-4eb4-b4cd-0f5c0ffc9496
+		summarizeBy: sum
+		sourceColumn: Day
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: e1ab2852-dd6a-4180-bd8e-f20c0f82ab3e
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: Month
+
+		changedProperty = SortByColumn
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterNo
+		dataType: int64
+		formatString: 0
+		lineageTag: dd9621fa-c204-4aab-b001-f62e62f31851
+		summarizeBy: sum
+		sourceColumn: QuarterNo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Date Hierarchie'
+		lineageTag: 387f80de-3f6f-4918-92be-cd3c667798e5
+
+		level Date
+			lineageTag: 77b066a9-6fcf-4904-a1e3-55042928be31
+			column: Date
+
+	partition 'Booking Calendar Table' = m
+		mode: import
+		source =
+				let
+					// Set the start and end date for the date table
+					StartDate = #date(2007, 01, 01),
+					EndDate = #date(2025, 12, 31),
+				 // Create a list of dates from the start to end date
+					DateList = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1,0,0,0)),
+					// Convert the list to a table and add columns for year, month, day, etc.
+					DateTable = Table.FromList(DateList, Splitter.SplitByNothing(), {"Date"}),
+					#"Changed Type" = Table.TransformColumnTypes(DateTable,{{"Date", type date}}),
+					#"Inserted Year" = Table.AddColumn(#"Changed Type", "Year", each Date.Year([Date]), Int32.Type),
+					#"Inserted Month" = Table.AddColumn(#"Inserted Year", "Month", each Date.Month([Date]), Int32.Type),
+					#"Inserted Day" = Table.AddColumn(#"Inserted Month", "Day", each Date.Day([Date]), Int32.Type),
+					#"Inserted MonthName" = Table.AddColumn(#"Inserted Day", "MonthName", each Date.ToText([Date], "MMMM"), type text),
+					#"Inserted QuarterNo" = Table.AddColumn(#"Inserted MonthName", "QuarterNo", each Date.QuarterOfYear([Date]), Int32.Type)
+				in
+				    #"Inserted QuarterNo"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

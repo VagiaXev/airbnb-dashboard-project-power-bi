@@ -1,0 +1,194 @@
+table FactBookings
+	lineageTag: 15625611-2e6d-4fcb-850e-c5c60e626b9e
+
+	measure 'Rolling Avg (30 Days)' = ```
+			
+			CALCULATE (
+			     FactBookings[Bookings Count],
+			    DATESINPERIOD (
+			        'Booking Calendar Table'[Date],
+			        MAX ('Booking Calendar Table'[Date] ),
+			        -30,                    
+			        DAY
+			    )
+			)
+			```
+		lineageTag: e0644aa3-84a0-4316-b91c-3035f960e8c8
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Bookings per Host' = ```
+			COUNT(FactBookings[Listing ID]) 
+			```
+		formatString: 0
+		lineageTag: b59efb59-f0a1-4735-8610-62901c7277ee
+
+		changedProperty = IsHidden
+
+	measure 'Number of Bookings' = ```
+			COUNT(FactBookings[Listing ID]) 
+			```
+		formatString: 0
+		lineageTag: 61d11b78-f470-40af-9fa1-1b3f6e0d0d90
+
+		changedProperty = IsHidden
+
+	measure 'Previous Month Bookings' =
+			CALCULATE(
+			      [Number of Bookings],
+			      PREVIOUSMONTH('Booking Calendar Table'[Date])
+			)
+		formatString: 0
+		lineageTag: afe50ac2-d807-4148-81ad-acf2e1de883a
+
+		changedProperty = IsHidden
+
+	measure 'MoM Growth %' = ```
+			
+			 DIVIDE(
+			    [Number of Bookings] - [Previous Month Bookings],
+			    [Previous Month Bookings]
+			 )
+			```
+		lineageTag: 538a2fbe-f8ad-4032-9eec-950ea7797603
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Bookings Count' =
+			CALCULATE(COUNT(FactBookings[Listing ID]),
+			FactBookings[Is Available Flag] = "No")
+		formatString: 0
+		lineageTag: 81374be7-6c6f-4510-b71e-b8beecbbdfc2
+
+		changedProperty = IsHidden
+
+	/// The listing id
+	column 'Listing ID'
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		lineageTag: fb4e6fc5-cdfc-4cae-84a5-8d1cc210b116
+		summarizeBy: none
+		sourceColumn: Listing ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The booking date
+	column 'Booking Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: c3aeb84a-03a0-4812-b60b-f2b71380e758
+		summarizeBy: none
+		sourceColumn: Booking Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// The availability of the listing
+	column 'Is Available Flag'
+		dataType: string
+		lineageTag: 20c7c940-35ea-4d88-9155-79351ce68a82
+		summarizeBy: none
+		sourceColumn: Is Available Flag
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The price per night for the listings at this period
+	column 'Booking Price'
+		dataType: double
+		formatString: #,0.###############\ "€";-#,0.###############\ "€";#,0.###############\ "€"
+		lineageTag: 76252616-61f2-47b1-adb5-0efac610a035
+		summarizeBy: sum
+		sourceColumn: Booking Price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"de-DE"}
+
+	/// The adjusted price confirmed for this specific booking
+	column 'Booking Price Adjusted'
+		dataType: double
+		formatString: #,0.###############\ "€";-#,0.###############\ "€";#,0.###############\ "€"
+		lineageTag: 12cbbb0e-e2e5-4a74-a10f-9f17cf7a221c
+		summarizeBy: sum
+		sourceColumn: Booking Price Adjusted
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"de-DE"}
+
+	/// The minimum nights allowed to book for the specific listing at this period
+	column 'Min Nights Allowed'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1093e379-43d6-41fc-944b-9c656d9583cf
+		summarizeBy: sum
+		sourceColumn: Min Nights Allowed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The maximum nights allowed to book for the specific listing at this period
+	column 'Max Nights Allowed'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8b48ce09-2cd1-46e2-a1b9-8c23f9baf351
+		summarizeBy: sum
+		sourceColumn: Max Nights Allowed
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactBookings = m
+		mode: import
+		source =
+				let
+				    Quelle = Sql.Database("DESKTOP-Q1CNOQD\SQLEXPRESS", "Greek_Airbnb"),
+				    dbo_FactBookings = Quelle{[Schema="dbo",Item="FactBookings"]}[Data],
+				    #"Geänderter Typ mit Gebietsschema" = Table.TransformColumnTypes(dbo_FactBookings, {{"price", type number}}, "en-US"),
+				    #"Geänderter Typ" = Table.TransformColumnTypes(#"Geänderter Typ mit Gebietsschema",{{"price", type number}}),
+				    #"Geänderter Typ mit Gebietsschema1" = Table.TransformColumnTypes(#"Geänderter Typ", {{"adjusted_price", type number}}, "en-US"),
+				    #"Umbenannte Spalten" = Table.RenameColumns(#"Geänderter Typ mit Gebietsschema1",{{"available", "is_available_flag"}, {"price", "booking_price"}, {"adjusted_price", "booking_price_adjusted"}, {"minimum_nights", "min_nights_allowed"}, {"maximum_nights", "max_nights_allowed"}}),
+				    #"Hinzugefügte benutzerdefinierte Spalte" = Table.AddColumn(#"Umbenannte Spalten", "min_nights", each if [min_nights_allowed] > 365 then 365 else [min_nights_allowed]),
+				    #"Gefilterte Zeilen" = Table.SelectRows(#"Hinzugefügte benutzerdefinierte Spalte", each true),
+				    #"Umbenannte Spalten1" = Table.RenameColumns(#"Gefilterte Zeilen",{{"min_nights_allowed", "min_nights_all"}}),
+				    #"Entfernte Spalten" = Table.RemoveColumns(#"Umbenannte Spalten1",{"min_nights_all"}),
+				    #"Neu angeordnete Spalten" = Table.ReorderColumns(#"Entfernte Spalten",{"listing_id", "booking_date", "is_available_flag", "booking_price", "booking_price_adjusted", "min_nights", "max_nights_allowed"}),
+				    #"Umbenannte Spalten2" = Table.RenameColumns(#"Neu angeordnete Spalten",{{"min_nights", "min_nights_allowed"}}),
+				    #"Geänderter Typ1" = Table.TransformColumnTypes(#"Umbenannte Spalten2",{{"min_nights_allowed", Int64.Type}}),
+				    #"Hinzugefügte benutzerdefinierte Spalte1" = Table.AddColumn(#"Geänderter Typ1", "max_night ", each if [max_nights_allowed] > 365 then 365 else [max_nights_allowed]),
+				    #"Gefilterte Zeilen1" = Table.SelectRows(#"Hinzugefügte benutzerdefinierte Spalte1", each true),
+				    #"Entfernte Spalten1" = Table.RemoveColumns(#"Gefilterte Zeilen1",{"max_nights_allowed"}),
+				    #"Umbenannte Spalten3" = Table.RenameColumns(#"Entfernte Spalten1",{{"max_night ", "max_nights_allowed"}}),
+				    #"Geänderter Typ2" = Table.TransformColumnTypes(#"Umbenannte Spalten3",{{"is_available_flag", type text}}),
+				    #"Ersetzter Wert" = Table.ReplaceValue(#"Geänderter Typ2","true","1",Replacer.ReplaceText,{"is_available_flag"}),
+				    #"Ersetzter Wert1" = Table.ReplaceValue(#"Ersetzter Wert","false","0",Replacer.ReplaceText,{"is_available_flag"}),
+				    #"Geänderter Typ3" = Table.TransformColumnTypes(#"Ersetzter Wert1",{{"is_available_flag", Int64.Type}, {"max_nights_allowed", Int64.Type}}),
+				    #"Umbenannte Spalten4" = Table.RenameColumns(#"Geänderter Typ3",{{"listing_id", "Listing ID"}, {"booking_date", "Booking Date"}, {"is_available_flag", "Is Available Flag"}, {"booking_price", "Booking Price"}, {"booking_price_adjusted", "Booking Price Adjusted"}, {"min_nights_allowed", "Min Nights Allowed"}, {"max_nights_allowed", "Max Nights Allowed"}}),
+				    #"Geänderter Typ4" = Table.TransformColumnTypes(#"Umbenannte Spalten4",{{"Is Available Flag", type text}}),
+				    #"Ersetzter Wert2" = Table.ReplaceValue(#"Geänderter Typ4","0","No",Replacer.ReplaceText,{"Is Available Flag"}),
+				    #"Ersetzter Wert3" = Table.ReplaceValue(#"Ersetzter Wert2","1","Yes",Replacer.ReplaceText,{"Is Available Flag"})
+				in
+				    #"Ersetzter Wert3"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

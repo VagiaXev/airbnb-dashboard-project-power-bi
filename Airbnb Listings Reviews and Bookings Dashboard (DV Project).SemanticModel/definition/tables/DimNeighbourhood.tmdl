@@ -1,0 +1,41 @@
+table DimNeighbourhood
+	lineageTag: e24ee268-9d88-4d25-aab8-61dd908b5d3c
+
+	column 'Neighbourhood ID'
+		dataType: int64
+		isKey
+		isNullable: false
+		formatString: 0
+		lineageTag: f10bbab1-d295-4030-9046-f965fce58d92
+		summarizeBy: none
+		sourceColumn: Neighbourhood ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The neighbourhood as geocoded using the latitude and longitude against neighborhoods as defined by open or public digital shapefiles.
+	column 'Listing Neighbourhood'
+		dataType: string
+		lineageTag: b81a5b85-7501-484e-b93a-959bbd1e057e
+		summarizeBy: none
+		sourceColumn: Listing Neighbourhood
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimNeighbourhood = m
+		mode: import
+		source =
+				let
+				    Quelle = Sql.Database("DESKTOP-Q1CNOQD\SQLEXPRESS", "Greek_Airbnb"),
+				    dbo_DimNeighbourhood = Quelle{[Schema="dbo",Item="DimNeighbourhood"]}[Data],
+				    #"Umbenannte Spalten" = Table.RenameColumns(dbo_DimNeighbourhood,{{"neighbourhood_cleansed", "Listing Neighbourhood"}, {"neighbourhood_id", "Neighbourhood ID"}})
+				in
+				    #"Umbenannte Spalten"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

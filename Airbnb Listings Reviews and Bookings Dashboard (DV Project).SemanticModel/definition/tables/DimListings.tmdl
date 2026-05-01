@@ -1,0 +1,378 @@
+table DimListings
+	lineageTag: 2803b169-829c-4fab-a783-58fd9a5238f2
+
+	measure Running_Total_listings
+		lineageTag: 9af4d10d-3ed5-44f8-9d77-dbfec7c550c6
+
+		changedProperty = IsHidden
+
+	measure 'Accommodation Group'
+		lineageTag: 8c77c51f-3bca-4c9d-8ff9-939fb355db3b
+
+		changedProperty = IsHidden
+
+	measure 'Avg Price' = ```
+			AVERAGE(DimListings[Listing Price]) 
+			```
+		formatString: #,0.###############\ "€";-#,0.###############\ "€";#,0.###############\ "€"
+		lineageTag: 7cd43070-daf7-46fd-8f1e-ded2e9dbd6d4
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"currencyCulture":"de-DE"}
+
+	measure 'Avg Bedroom' = AVERAGE(DimListings[Bedrooms])
+		lineageTag: 2487dd5f-0d09-4aef-bdb4-a933235c5b2d
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Price per Bedroom' = DIVIDE([Avg Price],[Avg Bedroom])
+		formatString: #,0.###############\ "€";-#,0.###############\ "€";#,0.###############\ "€"
+		lineageTag: 3e9d99c6-8ca2-4758-9273-0c347b546640
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"currencyCulture":"de-DE"}
+
+	measure 'Count of Listings' = COUNT(DimListings[Listing ID])
+		formatString: 0
+		lineageTag: f4b0cc22-6b19-41c4-9124-3b2169f7c64e
+
+		changedProperty = IsHidden
+
+	measure 'Price Category'
+		lineageTag: 3ea43a58-4abb-45c9-bf1a-5f08fa2aab3a
+
+		changedProperty = IsHidden
+
+	/// Airbnb’s unique identifier for the listing
+	column 'Listing ID'
+		dataType: int64
+		isKey
+		isNullable: false
+		formatString: 0
+		lineageTag: 3b8f9807-383c-4199-92ef-62aa19d58f54
+		summarizeBy: none
+		sourceColumn: Listing ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Room Type ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: f14ad027-f267-4085-b29a-8d2a976394c9
+		summarizeBy: none
+		sourceColumn: Room Type ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Property ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: a858e543-9d9a-4222-b8a0-2909fbcd66d8
+		summarizeBy: none
+		sourceColumn: Property ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Neighbourhood ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: a0b2cf5b-ce96-4978-9f54-3e53436d192e
+		summarizeBy: none
+		sourceColumn: Neighbourhood ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Airbnb’s unique identifier for the host/user
+	column 'Host ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 713ad253-2666-4245-b25d-f82d9ddccc6b
+		summarizeBy: none
+		sourceColumn: Host ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Airbnb’s URL for the listing
+	column 'Listing Page URL'
+		dataType: string
+		lineageTag: de989490-0a66-4996-b1d2-5aefdd232022
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: Listing Page URL
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Name of the listing
+	column 'Listing Name'
+		dataType: string
+		lineageTag: 8b0d82c8-f3cd-4de8-9f0a-cc31e5534597
+		summarizeBy: none
+		sourceColumn: Listing Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Detailed description of the listing
+	column 'Listing Description'
+		dataType: string
+		lineageTag: 856378d6-9fca-4c19-b1fb-cfcfbe05a6a1
+		summarizeBy: none
+		sourceColumn: Listing Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// URL to the Airbnb hosted regular sized image for the listing
+	column 'Listing Image URL'
+		dataType: string
+		lineageTag: e99290fb-4567-457b-ba03-14634a5340cd
+		dataCategory: ImageUrl
+		summarizeBy: none
+		sourceColumn: Listing Image URL
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The maximum capacity of the listing
+	column 'Accommodates Guests'
+		dataType: int64
+		formatString: 0
+		lineageTag: a4c1b87f-83c4-48ae-b591-2331c98c122d
+		summarizeBy: sum
+		sourceColumn: Accommodates Guests
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The number of bedrooms
+	column Bedrooms
+		dataType: int64
+		formatString: 0
+		lineageTag: 33b405de-8de9-490f-bc7e-0362950d475d
+		summarizeBy: sum
+		sourceColumn: Bedrooms
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// The number of bed(s)
+	column Beds
+		dataType: int64
+		formatString: 0
+		lineageTag: baf2b1bf-f802-441d-b1ed-5fb2984620f7
+		summarizeBy: sum
+		sourceColumn: Beds
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// daily price in local currency
+	column 'Listing Price'
+		dataType: double
+		formatString: #,0.###############\ "€";-#,0.###############\ "€";#,0.###############\ "€"
+		lineageTag: 743638ae-83d9-4409-b41c-41361a9ce9c4
+		summarizeBy: sum
+		sourceColumn: Listing Price
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"de-DE"}
+
+	/// minimum number of night stay for the listing (calendar rules may be different)
+	column 'Min Nights'
+		dataType: int64
+		formatString: 0
+		lineageTag: b121172f-e58d-4984-b080-a8a03e87d230
+		summarizeBy: sum
+		sourceColumn: Min Nights
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// maximum number of night stay for the listing (calendar rules may be different)
+	column 'Max Nights'
+		dataType: int64
+		formatString: 0
+		lineageTag: 83f0b185-f9fc-48d9-9d29-3b418c1c833b
+		summarizeBy: sum
+		sourceColumn: Max Nights
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// [t=true; f=false]
+	column 'Has Availability Flag'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3ce38e68-20e4-48cd-a30b-73dfa2363a66
+		summarizeBy: none
+		sourceColumn: Has Availability Flag
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	/// Uses the World Geodetic System (WGS84) projection for latitude and longitude.
+	column Latitude
+		dataType: double
+		formatString: 0
+		lineageTag: 5a2a76c8-62b0-439f-84c1-252342c5fc6c
+		summarizeBy: sum
+		sourceColumn: Latitude
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	/// Uses the World Geodetic System (WGS84) projection for latitude and longitude.
+	column Longitude
+		dataType: double
+		formatString: 0
+		lineageTag: 9cbd209a-2c65-4f86-b759-8cff1a6263a5
+		summarizeBy: sum
+		sourceColumn: Longitude
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	/// The number of bathrooms in the listing
+	column Bathrooms
+		dataType: int64
+		formatString: 0
+		lineageTag: 1c09c0b6-f008-4f22-a988-eab0a15fb586
+		summarizeBy: sum
+		sourceColumn: Bathrooms
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Min Profit'
+		dataType: int64
+		formatString: #,0.###############\ "€";-#,0.###############\ "€";#,0.###############\ "€"
+		lineageTag: 208c6f26-5190-446b-965b-a4f405521b20
+		summarizeBy: sum
+		sourceColumn: Min Profit
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"de-DE"}
+
+	column 'Max Profit'
+		dataType: int64
+		formatString: #,0.###############\ "€";-#,0.###############\ "€";#,0.###############\ "€"
+		lineageTag: 6714e74b-7288-41b9-8ca7-ec763b14afdb
+		summarizeBy: sum
+		sourceColumn: Max Profit
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"de-DE"}
+
+	column 'Price Categorization' = ```
+			
+			 SWITCH(
+			    TRUE(),
+			    ISBLANK(DIVIDE( DimListings[Listing Price],DimListings[Bedrooms])), "No Bedroom Info",
+			    DIVIDE(DimListings[Listing Price],DimListings[Bedrooms]) < 50.000 , "Budget",
+			    DIVIDE(DimListings[Listing Price],DimListings[Bedrooms]) >= 50.000 && DimListings[Listing Price]/DimListings[Bedrooms] < 120.000 , "Mid-range",
+			    DIVIDE(DimListings[Listing Price],DimListings[Bedrooms]) >= 120.000 , "Luxury"
+			 )
+			```
+		lineageTag: 5a910928-4850-460f-a8ee-2e2ebcc1c96c
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Instant Bookable Flag'
+		dataType: string
+		lineageTag: e4ddc824-ccd3-4f0a-be01-ed9f1cbc8915
+		summarizeBy: none
+		sourceColumn: Instant Bookable Flag
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimListings = m
+		mode: import
+		source =
+				let
+				    Quelle = Sql.Database("DESKTOP-Q1CNOQD\SQLEXPRESS", "Greek_Airbnb"),
+				    dbo_DimListings = Quelle{[Schema="dbo",Item="DimListings"]}[Data],
+				    #"Geänderter Typ" = Table.TransformColumnTypes(dbo_DimListings,{{"accommodates", Int64.Type}}),
+				    #"Umbenannte Spalten" = Table.RenameColumns(#"Geänderter Typ",{{"listing_url", "listing_page_url"}, {"picture_url", "listing_image_url"}, {"name", "listing_name"}, {"description", "listing_description"}, {"accommodates", "accommodates_guests"}, {"bathrooms_text", "bathrooms_text"}, {"amenities", "amenities_list"}, {"price", "listing_price"}, {"has_availability", "has_availability_flag"}, {"instant_bookable", "instant_bookable_flag"}, {"minimum_nights", "min_nights_allowed"}, {"maximum_nights", "max_nights_allowed"}}),
+				    #"Spalte nach Trennzeichen teilen" = Table.SplitColumn(#"Umbenannte Spalten", "bathrooms_text", Splitter.SplitTextByEachDelimiter({" "}, QuoteStyle.Csv, false), {"bathrooms_text.1", "bathrooms_text.2"}),
+				    #"Geänderter Typ1" = Table.TransformColumnTypes(#"Spalte nach Trennzeichen teilen",{{"bathrooms_text.1", Int64.Type}, {"bathrooms_text.2", type text}}),
+				    #"Entfernte Spalten" = Table.RemoveColumns(#"Geänderter Typ1",{"bathrooms_text.2"}),
+				    #"Umbenannte Spalten1" = Table.RenameColumns(#"Entfernte Spalten",{{"bathrooms_text.1", "bathrooms"}, {"min_nights_allowed", "minimum_nights"}, {"max_nights_allowed", "maximum_nights"}}),
+				    #"Hinzugefügte benutzerdefinierte Spalte" = Table.AddColumn(#"Umbenannte Spalten1", "Min Profit", each [listing_price]*[minimum_nights]),
+				    #"Geänderter Typ2" = Table.TransformColumnTypes(#"Hinzugefügte benutzerdefinierte Spalte",{{"Min Profit", Int64.Type}}),
+				    #"Hinzugefügte benutzerdefinierte Spalte1" = Table.AddColumn(#"Geänderter Typ2", "Max Profit", each [listing_price]*[maximum_nights]),
+				    #"Geänderter Typ3" = Table.TransformColumnTypes(#"Hinzugefügte benutzerdefinierte Spalte1",{{"Max Profit", Int64.Type}}),
+				    #"Gefilterte Zeilen" = Table.SelectRows(#"Geänderter Typ3", each true),
+				    #"Geänderter Typ4" = Table.TransformColumnTypes(#"Gefilterte Zeilen",{{"has_availability_flag", type text}}),
+				    #"Ersetzter Wert" = Table.ReplaceValue(#"Geänderter Typ4","true","1",Replacer.ReplaceValue,{"has_availability_flag"}),
+				    #"Ersetzter Wert1" = Table.ReplaceValue(#"Ersetzter Wert","false","0",Replacer.ReplaceValue,{"has_availability_flag"}),
+				    #"Geänderter Typ5" = Table.TransformColumnTypes(#"Ersetzter Wert1",{{"has_availability_flag", Int64.Type}, {"instant_bookable_flag", type text}}),
+				    #"Ersetzter Wert2" = Table.ReplaceValue(#"Geänderter Typ5","true","1",Replacer.ReplaceText,{"instant_bookable_flag"}),
+				    #"Ersetzter Wert3" = Table.ReplaceValue(#"Ersetzter Wert2","false","0",Replacer.ReplaceText,{"instant_bookable_flag"}),
+				    #"Geänderter Typ6" = Table.TransformColumnTypes(#"Ersetzter Wert3",{{"instant_bookable_flag", Int64.Type}}),
+				    #"Umbenannte Spalten2" = Table.RenameColumns(#"Geänderter Typ6",{{"listing_id", "Listing ID"}, {"room_type_id", "Room Type ID"}, {"property_id", "Property ID"}, {"neighbourhood_id", "Neighbourhood ID"}, {"host_id", "Host ID"}, {"listing_page_url", "Listing Page URL"}, {"listing_name", "Listing Name"}, {"listing_description", "Listing Description"}, {"listing_image_url", "Listing Image URL"}, {"accommodates_guests", "Accommodates Guests"}, {"bathrooms", "Bathrooms"}, {"bedrooms", "Bedrooms"}, {"beds", "Beds"}}),
+				    #"Entfernte Spalten1" = Table.RemoveColumns(#"Umbenannte Spalten2",{"amenities_list"}),
+				    #"Umbenannte Spalten3" = Table.RenameColumns(#"Entfernte Spalten1",{{"listing_price", "Listing Price"}, {"minimum_nights", "Min Nights"}, {"maximum_nights", "Max Nights"}, {"has_availability_flag", "Has Availability Flag"}, {"latitude", "Latitude"}, {"longitude", "Longitude"}, {"instant_bookable_flag", "Instant Bookable Flag"}}),
+				    #"Hinzugefügte benutzerdefinierte Spalte2" = Table.AddColumn(#"Umbenannte Spalten3", "Benutzerdefiniert", each Text.Replace(
+				    Text.Replace(
+				        Text.From([Instant Bookable Flag]),
+				        "0",
+				        "No"),
+				        "1",
+				        "Yes"
+				)),
+				    #"Neu angeordnete Spalten" = Table.ReorderColumns(#"Hinzugefügte benutzerdefinierte Spalte2",{"Listing ID", "Room Type ID", "Property ID", "Neighbourhood ID", "Host ID", "Listing Page URL", "Listing Name", "Listing Description", "Listing Image URL", "Accommodates Guests", "Bathrooms", "Bedrooms", "Beds", "Listing Price", "Min Nights", "Max Nights", "Has Availability Flag", "Latitude", "Longitude", "Instant Bookable Flag", "Benutzerdefiniert", "Min Profit", "Max Profit"}),
+				    #"Entfernte Spalten2" = Table.RemoveColumns(#"Neu angeordnete Spalten",{"Instant Bookable Flag"}),
+				    #"Umbenannte Spalten4" = Table.RenameColumns(#"Entfernte Spalten2",{{"Benutzerdefiniert", "Instant Bookable Flag"}})
+				in
+				    #"Umbenannte Spalten4"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

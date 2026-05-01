@@ -1,0 +1,54 @@
+table DimRoomType
+	lineageTag: 2cbfb006-c43f-40df-a2b3-74febdf351d0
+
+	column 'Room Type ID'
+		dataType: int64
+		isKey
+		formatString: 0
+		lineageTag: 9cbd7e28-b2e8-4530-b94a-34c0eb81f4d8
+		summarizeBy: none
+		sourceColumn: Room Type ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// [Entire home/apt|Private room|Shared room|Hotel]
+	/// 
+	/// All homes are grouped into the following three room types:
+	/// 
+	/// Entire place
+	/// Private room
+	/// Shared room
+	/// Entire place
+	/// Entire places are best if you’re seeking a home away from home. With an entire place, you’ll have the whole space to yourself. This usually includes a bedroom, a bathroom, a kitchen, and a separate, dedicated entrance. Hosts should note in the description if they’ll be on the property or not (ex: “Host occupies first floor of the home”), and provide further details on the listing.
+	/// 
+	/// Private rooms
+	/// Private rooms are great for when you prefer a little privacy, and still value a local connection. When you book a private room, you’ll have your own private room for sleeping and may share some spaces with others. You might need to walk through indoor spaces that another host or guest may occupy to get to your room.
+	/// 
+	/// Shared rooms
+	/// Shared rooms are for when you don’t mind sharing a space with others. When you book a shared room, you’ll be sleeping in a space that is shared with others and share the entire space with other people. Shared rooms are popular among flexible travelers looking for new friends and budget-friendly stays.
+	column 'Room Type'
+		dataType: string
+		lineageTag: 645f6de4-e608-429d-9e0c-b7b22fcfd2f7
+		summarizeBy: none
+		sourceColumn: Room Type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimRoomType = m
+		mode: import
+		source =
+				let
+				    Quelle = Sql.Database("DESKTOP-Q1CNOQD\SQLEXPRESS", "Greek_Airbnb"),
+				    dbo_DimRoomType = Quelle{[Schema="dbo",Item="DimRoomType"]}[Data],
+				    #"Umbenannte Spalten" = Table.RenameColumns(dbo_DimRoomType,{{"room_type_id", "Room Type ID"}, {"room_type", "Room Type"}})
+				in
+				    #"Umbenannte Spalten"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

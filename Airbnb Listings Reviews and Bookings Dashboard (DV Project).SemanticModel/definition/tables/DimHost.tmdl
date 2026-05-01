@@ -1,0 +1,321 @@
+table DimHost
+	lineageTag: 161998be-4412-4191-8924-9945fe66ee6e
+
+	measure 'Host Count' = ```
+			DISTINCTCOUNT(DimListings[Host ID]) 
+			```
+		formatString: 0
+		lineageTag: 25ec9a53-4f69-42ea-a5cf-e53d4630414b
+
+		changedProperty = IsHidden
+
+	measure 'Avg Review Score Value' = ```
+			AVERAGE(FactReviewScores[Review Scores Value]) 
+			```
+		lineageTag: a65e796a-d8a5-45e6-b508-c92236730568
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Reviews Score Value' = AVERAGE(FactReviewScores[Review Scores Value])
+		lineageTag: 72200efe-5370-4b6a-ab1b-dc91274b4061
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Reviews Scores Value' = ```
+			AVERAGE(FactReviewScores[Review Scores Value])/100 
+			```
+		lineageTag: eda9b9c2-8c4a-43ca-a3fc-b5fdf687710d
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Listings per Host (Column)' = ```
+			
+			 CALCULATE(
+			    COUNT(DimListings[Listing ID]),
+			    ALLEXCEPT(DimListings, DimListings[Host ID])
+			 )
+			```
+		formatString: 0
+		lineageTag: 25051da2-701f-4d2c-97a2-d6624c2afa89
+
+		changedProperty = IsHidden
+
+	measure 'Host type' = ```
+			
+			 SWITCH (
+			    TRUE(),
+			    [Listings per Host (Column)] = 1, "Casual",
+			    [Listings per Host (Column)] <= 5, "Semi-Professional",
+			    "Professional"
+			 )
+			```
+		lineageTag: ca431526-7f86-480c-9ee6-6d2f63b4b024
+
+		changedProperty = IsHidden
+
+	column Host_Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 688395e9-4044-471b-a0dd-8233ec715e0c
+		summarizeBy: none
+		sourceColumn: Host_Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Page_URL
+		dataType: string
+		lineageTag: a1be194c-b69e-48e0-90e5-88bb3d449d58
+		summarizeBy: none
+		sourceColumn: Host_Page_URL
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Name
+		dataType: string
+		lineageTag: 5de478ea-795d-4f97-9290-760b62874cd3
+		summarizeBy: none
+		sourceColumn: Host_Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Since_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: b045fd00-a802-4ea9-931f-6fbd81caf43c
+		summarizeBy: none
+		sourceColumn: Host_Since_Date
+
+		variation Variation
+			isDefault
+			relationship: 2707883e-fe08-4e50-88c9-b9b6ce7ebf2f
+			defaultHierarchy: LocalDateTable_542f1171-1158-46f6-bf01-d8f59d6bbdd7.Datumshierarchie
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Host_Description
+		dataType: string
+		lineageTag: 65389fef-e085-4c92-9d04-4718e35b9913
+		summarizeBy: none
+		sourceColumn: Host_Description
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Response_Time_Desc
+		dataType: string
+		lineageTag: 6baffbfa-d6c8-46a1-bd8e-f96430a0f1dd
+		summarizeBy: none
+		sourceColumn: Host_Response_Time_Desc
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Response_Rate_Pct
+		dataType: string
+		lineageTag: e757a596-4de2-48bd-8153-f7ed07e2c299
+		summarizeBy: none
+		sourceColumn: Host_Response_Rate_Pct
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Acceptance_Rate_Pct
+		dataType: string
+		lineageTag: 8f91e10e-b11f-4577-bb5a-386dea73e448
+		summarizeBy: none
+		sourceColumn: Host_Acceptance_Rate_Pct
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Is_Superhost_Flag
+		dataType: string
+		lineageTag: a4c32393-2aa3-4a3a-a492-060ac6d39189
+		summarizeBy: none
+		sourceColumn: Host_Is_Superhost_Flag
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Thumbnail_URL
+		dataType: string
+		lineageTag: 6148447a-b3cd-4b4e-961a-2268702c8bdb
+		summarizeBy: none
+		sourceColumn: Host_Thumbnail_URL
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Picture_URL
+		dataType: string
+		lineageTag: a4f705a0-e446-423d-aa75-ca05e03cf2ed
+		summarizeBy: none
+		sourceColumn: Host_Picture_URL
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_verifications_list
+		dataType: string
+		lineageTag: 20e36b15-6ed6-4279-ab6f-bef73dccb721
+		summarizeBy: none
+		sourceColumn: Host_verifications_list
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Profile_Pic_Flag
+		dataType: int64
+		formatString: 0
+		lineageTag: fe9db8e3-3390-402c-9abc-c9c5751cf1b0
+		summarizeBy: sum
+		sourceColumn: Host_Profile_Pic_Flag
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Host_Identity_Verified_Flag
+		dataType: int64
+		formatString: 0
+		lineageTag: 81bf8b2a-8b2f-4647-b2ea-a776348dd663
+		summarizeBy: sum
+		sourceColumn: Host_Identity_Verified_Flag
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: fc25a4bd-870c-44f7-b241-4bcc5c816c92
+		summarizeBy: none
+		sourceColumn: City
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: 6dc3d1d6-942e-4434-824e-bd1e19c35ec9
+		summarizeBy: none
+		sourceColumn: Country
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Listings per Host' =
+			
+			CALCULATE(
+			    COUNT(DimListings[Listing ID]),
+			    ALLEXCEPT(DimListings, DimListings[Host ID])
+			    )
+		formatString: 0
+		lineageTag: f683ec7c-af7e-4bb9-81f0-5c5ea6940016
+		summarizeBy: sum
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Host Type Category' = ```
+			
+			 SWITCH(
+			    TRUE(),
+			    [Listings per Host (Column)] = 1, "Casual",
+			    [Listings per Host (Column)] <= 5, "Semi-Professional",
+			    "Professional"
+			 )
+			```
+		lineageTag: 952709f2-44f0-4d7a-b85c-dde670581cf2
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimHost = m
+		mode: import
+		source =
+				let
+				    Quelle = Sql.Database("DESKTOP-Q1CNOQD\SQLEXPRESS", "Greek_Airbnb"),
+				    dbo_DimHost = Quelle{[Schema="dbo",Item="DimHost"]}[Data],
+				    #"Geänderter Typ" = Table.TransformColumnTypes(dbo_DimHost,{{"Host_Profile_Pic_Flag", Int64.Type}, {"Host_Identity_Verified_Flag", Int64.Type}, {"Host_Is_Superhost_Flag", Int64.Type}}),
+				    #"Gefilterte Zeilen" = Table.SelectRows(#"Geänderter Typ", each true),
+				    #"Ersetzter Wert" = Table.ReplaceValue(#"Gefilterte Zeilen",null,"N/A",Replacer.ReplaceValue,{"Host_Response_Time_Desc"}),
+				    #"Gefilterte Zeilen1" = Table.SelectRows(#"Ersetzter Wert", each true),
+				    #"Ersetzter Wert1" = Table.ReplaceValue(#"Gefilterte Zeilen1",null,"Unknown",Replacer.ReplaceValue,{"Host_Location"}),
+				    #"Hinzugefügte benutzerdefinierte Spalte" = Table.AddColumn(#"Ersetzter Wert1", "City", each if Text.Contains([Host_Location],",")
+				then Text.BeforeDelimiter([Host_Location],",")
+				else null),
+				    #"Hinzugefügte benutzerdefinierte Spalte1" = Table.AddColumn(#"Hinzugefügte benutzerdefinierte Spalte", "Country", each if Text.Contains([Host_Location],",")
+				then Text.AfterDelimiter([Host_Location],",")
+				else null),
+				    #"Gefilterte Zeilen2" = Table.SelectRows(#"Hinzugefügte benutzerdefinierte Spalte1", each true),
+				    #"Neu angeordnete Spalten" = Table.ReorderColumns(#"Gefilterte Zeilen2",{"Host_Id", "Host_Page_URL", "Host_Name", "Host_Since_Date", "Host_Location", "City", "Country", "Host_Description", "Host_Response_Time_Desc", "Host_Response_Rate_Pct", "Host_Acceptance_Rate_Pct", "Host_Is_Superhost_Flag", "Host_Thumbnail_URL", "Host_Picture_URL", "Host_verifications_list", "Host_Profile_Pic_Flag", "Host_Identity_Verified_Flag"}),
+				    #"Entfernte Spalten" = Table.RemoveColumns(#"Neu angeordnete Spalten",{"Host_Location"}),
+				    #"Ersetzter Wert2" = Table.ReplaceValue(#"Entfernte Spalten",null,"Unknown",Replacer.ReplaceValue,{"City"}),
+				    #"Ersetzter Wert3" = Table.ReplaceValue(#"Ersetzter Wert2",null,"Unknown",Replacer.ReplaceValue,{"Country"}),
+				    #"Ersetzter Wert4" = Table.ReplaceValue(#"Ersetzter Wert3","Athina","Athens",Replacer.ReplaceText,{"City"}),
+				    #"Ersetzter Wert5" = Table.ReplaceValue(#"Ersetzter Wert4","Attica","Athens",Replacer.ReplaceText,{"City"}),
+				    #"Ersetzter Wert6" = Table.ReplaceValue(#"Ersetzter Wert5","Athens region","Athens",Replacer.ReplaceText,{"City"}),
+				    #"Ersetzter Wert7" = Table.ReplaceValue(#"Ersetzter Wert6","Central Athens Regional Unit","Athens",Replacer.ReplaceText,{"City"}),
+				    #"Ersetzter Wert8" = Table.ReplaceValue(#"Ersetzter Wert7","Αθήνα","Athens",Replacer.ReplaceText,{"City"}),
+				    #"Gefilterte Zeilen3" = Table.SelectRows(#"Ersetzter Wert8", each true),
+				    #"Ersetzter Wert9" = Table.ReplaceValue(#"Gefilterte Zeilen3","CA","Canada",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert10" = Table.ReplaceValue(#"Ersetzter Wert9","DC","Washington",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert11" = Table.ReplaceValue(#"Ersetzter Wert10","FL","Florida",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert12" = Table.ReplaceValue(#"Ersetzter Wert11","GA","Georgia",Replacer.ReplaceText,{"Country"}),
+				    #"Gefilterte Zeilen4" = Table.SelectRows(#"Ersetzter Wert12", each true),
+				    #"Ersetzter Wert13" = Table.ReplaceValue(#"Gefilterte Zeilen4","IL","Ilinnois",Replacer.ReplaceText,{"Country"}),
+				    #"Gefilterte Zeilen5" = Table.SelectRows(#"Ersetzter Wert13", each true),
+				    #"Ersetzter Wert14" = Table.ReplaceValue(#"Gefilterte Zeilen5","MO","Montana",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert15" = Table.ReplaceValue(#"Ersetzter Wert14","NY","New York",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert16" = Table.ReplaceValue(#"Ersetzter Wert15","PA","Pennsylvania",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert17" = Table.ReplaceValue(#"Ersetzter Wert16","WA","Washington",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert18" = Table.ReplaceValue(#"Ersetzter Wert17","VA","Virginia",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert19" = Table.ReplaceValue(#"Ersetzter Wert18","IN","India",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert20" = Table.ReplaceValue(#"Ersetzter Wert19","HI","Hawai",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert21" = Table.ReplaceValue(#"Ersetzter Wert20","LA","Los Angeles",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert22" = Table.ReplaceValue(#"Ersetzter Wert21","MA","Morocco",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert23" = Table.ReplaceValue(#"Ersetzter Wert22","MD","Moldova",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert24" = Table.ReplaceValue(#"Ersetzter Wert23","MI","China",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert25" = Table.ReplaceValue(#"Ersetzter Wert24","TX ","Texas",Replacer.ReplaceText,{"Country"}),
+				    #"Ersetzter Wert26" = Table.ReplaceValue(#"Ersetzter Wert25","TX","Texas",Replacer.ReplaceText,{"Country"}),
+				    #"Gefilterte Zeilen6" = Table.SelectRows(#"Ersetzter Wert26", each true),
+				    #"Geänderter Typ1" = Table.TransformColumnTypes(#"Gefilterte Zeilen6",{{"Host_Is_Superhost_Flag", type text}}),
+				    #"Ersetzter Wert27" = Table.ReplaceValue(#"Geänderter Typ1","0","No",Replacer.ReplaceText,{"Host_Is_Superhost_Flag"}),
+				    #"Ersetzter Wert28" = Table.ReplaceValue(#"Ersetzter Wert27","1","Yes",Replacer.ReplaceText,{"Host_Is_Superhost_Flag"})
+				in
+				    #"Ersetzter Wert28"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

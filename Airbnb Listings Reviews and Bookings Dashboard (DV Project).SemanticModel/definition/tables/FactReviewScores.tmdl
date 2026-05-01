@@ -1,0 +1,161 @@
+table FactReviewScores
+	lineageTag: 05d324e0-c21a-4cba-bbf0-2b50e61757a5
+
+	measure 'Avg CheckIn' = AVERAGE(FactReviewScores[Review Scores Checkin])/100
+		lineageTag: cae7c2e6-5242-4843-91f8-af43229a9fe0
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'CheckIn Review Count' = COUNT(FactReviewScores[Review Scores Checkin] )
+		formatString: 0
+		lineageTag: 0db80424-e147-44aa-85f4-358cb95bd279
+
+		changedProperty = IsHidden
+
+	measure 'Avg CheckIn Valid' = ```
+			
+			 IF(
+			    [CheckIn Review Count] >= 5,
+			    [Avg CheckIn],
+			    BLANK()
+			    )
+			```
+		lineageTag: b68ed2d4-24bf-4c79-b7a8-5a685183da09
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Review Score Rating' = AVERAGE(FactReviewScores[Review Scores Rating])
+		lineageTag: 0f8b34c1-94f9-4b74-93c7-e631aef8e2bd
+
+		changedProperty = IsHidden
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Review Ratings Count' = COUNT(FactReviewScores[Review Scores Rating])
+		formatString: 0
+		lineageTag: c1ca764e-279b-4c0e-a504-4dd4832c121c
+
+	/// Airbnb’s unique identifier for the listing
+	column 'Listing ID'
+		dataType: int64
+		isKey
+		formatString: 0
+		lineageTag: bcce6216-d668-44f5-9a31-786b31f4be86
+		summarizeBy: none
+		sourceColumn: Listing ID
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Decimal number between 0 to 5
+	column 'Review Scores Rating'
+		dataType: double
+		lineageTag: add26089-2130-4c43-b2fb-186f7642a34c
+		summarizeBy: average
+		sourceColumn: Review Scores Rating
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Decimal number between 0 to 6
+	column 'Review Scores Accuracy'
+		dataType: double
+		lineageTag: ff6c1bdd-ac4f-4df9-9d0d-a3e1ab7b77bf
+		summarizeBy: average
+		sourceColumn: Review Scores Accuracy
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Decimal number between 0 to 7
+	column 'Review Scores Cleanliness'
+		dataType: double
+		lineageTag: 136542cb-847a-4f31-9ca6-801c526cbf19
+		summarizeBy: average
+		sourceColumn: Review Scores Cleanliness
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Decimal number between 0 to 8
+	column 'Review Scores Checkin'
+		dataType: double
+		lineageTag: d2829b8c-cbb4-41fb-94fc-36fba25ea8ac
+		summarizeBy: average
+		sourceColumn: Review Scores Checkin
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Decimal number between 0 to 9
+	column 'Review Scores Communication'
+		dataType: double
+		lineageTag: a4420236-868b-44c4-8ab4-0d5a33f559d4
+		summarizeBy: average
+		sourceColumn: Review Scores Communication
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Decimal number between 0 to 10
+	column 'Review Scores Location'
+		dataType: double
+		lineageTag: 0fbc7c4c-d566-4c27-8439-3738e3c48f00
+		summarizeBy: average
+		sourceColumn: Review Scores Location
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Decimal number between 0 to 11
+	column 'Review Scores Value'
+		dataType: double
+		lineageTag: 13c0edbb-cb18-4ed0-8c2a-ec4d8c980c41
+		summarizeBy: average
+		sourceColumn: Review Scores Value
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition FactReviewScores = m
+		mode: import
+		source =
+				let
+				    Quelle = Sql.Database("DESKTOP-Q1CNOQD\SQLEXPRESS", "Greek_Airbnb"),
+				    dbo_FactReviewScores = Quelle{[Schema="dbo",Item="FactReviewScores"]}[Data],
+				    #"Umbenannte Spalten" = Table.RenameColumns(dbo_FactReviewScores,{{"review_scores_rating", "reviewscores_rating"}, {"review_scores_accuracy", "reviewscores_accuracy"}, {"review_scores_cleanliness", "reviewscores_cleanliness"}, {"review_scores_checkin", "reviewscores_checkin"}, {"review_scores_communication", "reviewscores_communication"}, {"review_scores_location", "reviewscores_location"}, {"review_scores_value", "reviewscores_value"}}),
+				    #"Gefilterte Zeilen" = Table.SelectRows(#"Umbenannte Spalten", each true),
+				    #"Umbenannte Spalten1" = Table.RenameColumns(#"Gefilterte Zeilen",{{"listing_id", "Listing ID"}, {"reviewscores_rating", "Review Scores Rating"}, {"reviewscores_accuracy", "Review Scores Accuracy"}, {"reviewscores_cleanliness", "Review Scores Cleanliness"}, {"reviewscores_checkin", "Review Scores Checkin"}, {"reviewscores_communication", "Review Scores Communication"}, {"reviewscores_location", "Review Scores Location"}, {"reviewscores_value", "Review Scores Value"}})
+				in
+				    #"Umbenannte Spalten1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
