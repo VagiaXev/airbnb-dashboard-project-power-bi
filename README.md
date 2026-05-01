@@ -8,6 +8,7 @@ The project was developed as part of the course "Power BI: A Guide to Data Visua
 
 - **pbix/**: It contains the Power BI report with the dashboard.
 - `Airbnb Listings Reviews and Bookings Dashboard (DV Project).pbix`
+- Download the Power BI Dashboard: You can find the full .pbix in the Releases section.
 
 - **presentation/**: It contains the PowerPoint presentation with the conclusions from the analysis
 - `Airbnb_Dashboard_Insights.ppt`
